@@ -1,11 +1,12 @@
 #! /usr/bin/env pwsh
 
 $data = get-content -raw $args
-$data = $data.split("`n") | foreach {$_.trim()}
+$data = $data.split("`n") # | foreach {$_.trim()}
 $incr = $null
 
 foreach ($line in $data) {
-    $arr = @()
+    $valid=0
+    $arr = new-object -TypeName System.collections.arraylist
     $line.split(" ") | foreach {if ($_ -ne "") {$arr += $_}}
     # $arr | get-member
     write-host "checking $arr"
@@ -19,25 +20,29 @@ foreach ($line in $data) {
             write-host "init valid, lowering" }
         else {continue}
     }
-    for (($i = 0); $i -lt $arr.count; $i++) {
-        $diff = $i - ($i + 1)
+    for (($i = 0); $i -lt ($arr.length - 1); $i++) {
+        $diff = $arr[$i] - $arr[($i + 1)]
         if ($incr -eq $true -and $diff -in (-1..-3)) {
-            # $valid++
-            write-host "$i valid"
-            continue }
+            $valid++
+            write-host $arr[$i] - $arr[($i + 1)]"$i valid $valid"
+            # continue
+            }
         elseif ($incr -eq $false -and $diff -in (1..3)) {
-            # $valid++
-            write-host "$i valid"
-            continue }
+            $valid++
+            write-host $arr[$i] - $arr[($i + 1)]"$i valid $valid"
+            # continue
+            }
         else {
             Write-host "invalid"
             $incr = $null
             break
         }
-    # if ($valid -eq ($arr.count - 1)) {
+    if ($valid -eq ($arr.length - 1)) {
+        echo safe
         $final++
-        $incr = $null}
-    # }
+        }
+    }
+    $incr = $null
 }
 
 Write-host "$final are safe!"
