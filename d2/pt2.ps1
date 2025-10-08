@@ -1,67 +1,67 @@
 #! /usr/bin/env pwsh
 
-# func
-function main{
-# todo
-}
-
-# vars
 $data = get-content -raw $args
 $data = $data.split("`n") # | foreach {$_.trim()}
 $incr = $null
-$aarr = @{}
 
-# $data[0]
-
-# making hastable key value for each line
-for (($i = 0); $i -le ($data.length - 2); $i++) {
-    $aarr.add($i, [array[]]$data[$i])
-    # write-output WE DONE IT
+function Ch-init {
+    param ( $par )
+    if ($incr -eq $null) {
+        $init = ($par[0] - $par[1])
+        if ($init -in (-1..-3)) {
+            $Script:incr = $true
+            write-host "init valid, rising" $incr}
+        elseif ($init -in (1..3)) {
+            $Script:incr = $false
+            write-host "init valid, lowering" }
+        else {continue}
+    }
+}
+function invalid-mode {
+    param ( $par )
+    $Script:TmpArr = new-object -TypeName System.collections.arraylist
+    for (($i = 1); $i -lt ($par.length); $i++) {
+# todo make a loop to populate tmparr, remove does not work
+        # $par.removeat($i) | foreach {$TmpArr.add($_)}
+        Write-host "to check new = $TmpArr"
+# todo logic to check tmparr, only in func
+    }
 }
 
-# TODO add logic, I guess in functions
+foreach ($line in $data) {
+    $valid=0
+    $arr = new-object -TypeName System.collections.arraylist
+    $line.split(" ") | foreach {if ($_ -ne "") {$arr += $_}}
+    invalid-mode $arr
+    exit
+    # $arr | get-member
+    write-host "checking $arr"
+    Ch-init $arr
+        for (($i = 0); $i -lt ($arr.length - 1); $i++) {
+        $diff = $arr[$i] - $arr[($i + 1)]
+        if ($incr -eq $true -and $diff -in (-1..-3)) {
+            $valid++
+            write-host $arr[$i] - $arr[($i + 1)]"$i valid $valid"
+            # continue
+            }
+        elseif ($incr -eq $false -and $diff -in (1..3)) {
+            $valid++
+            write-host $arr[$i] - $arr[($i + 1)]"$i valid $valid"
+            # continue
+            }
+        else {
+            Write-host "invalid"
+            $incr = $null
+            invalid-mode $arr #  break
+        }
+    if ($valid -eq ($arr.length - 1)) {
+        echo safe
+        $final++
+        }
+    }
+    $incr = $null
+}
 
-
-
-
-# $aarr.0 | get-member
-#    TypeName: System.Object[]
-# Available methods for $aarr
-# Name           MemberType            Definition
-# ----           ----------            ----------
-# Add            Method                int IList.Add(System.Object value)
-# Address        Method                System.Object&, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e Address(int )
-# Clear          Method                void IList.Clear()
-# Clone          Method                System.Object Clone(), System.Object ICloneable.Clone()
-# CompareTo      Method                int IStructuralComparable.CompareTo(System.Object other, System.Collections.IComparer comparer)
-# Contains       Method                bool IList.Contains(System.Object value)
-# CopyTo         Method                void CopyTo(array array, int index), void CopyTo(array array, long index), void ICollection.CopyTo(array array, int index)
-# Equals         Method                bool Equals(System.Object obj), bool IStructuralEquatable.Equals(System.Object other, System.Collections.IEqualityComparer comparer)
-# Get            Method                System.Object Get(int )
-# GetEnumerator  Method                System.Collections.IEnumerator GetEnumerator(), System.Collections.IEnumerator IEnumerable.GetEnumerator()
-# GetHashCode    Method                int GetHashCode(), int IStructuralEquatable.GetHashCode(System.Collections.IEqualityComparer comparer)
-# GetLength      Method                int GetLength(int dimension)
-# GetLongLength  Method                long GetLongLength(int dimension)
-# GetLowerBound  Method                int GetLowerBound(int dimension)
-# GetType        Method                type GetType()
-# GetUpperBound  Method                int GetUpperBound(int dimension)
-# GetValue       Method                System.Object GetValue(Params int[] indices), System.Object GetValue(int index), System.Object GetValue(int index1, int index2), System.Object GetValue(int index1, int index…
-# IndexOf        Method                int IList.IndexOf(System.Object value)
-# Initialize     Method                void Initialize()
-# Insert         Method                void IList.Insert(int index, System.Object value)
-# Remove         Method                void IList.Remove(System.Object value)
-# RemoveAt       Method                void IList.RemoveAt(int index)
-# Set            Method                void Set(int , System.Object )
-# SetValue       Method                void SetValue(System.Object value, int index), void SetValue(System.Object value, int index1, int index2), void SetValue(System.Object value, int index1, int index2, int ind…
-# ToString       Method                string ToString()
-# Item           ParameterizedProperty System.Object IList.Item(int index) {get;set;}
-# Count          Property              int Count {get;}
-# IsFixedSize    Property              bool IsFixedSize {get;}
-# IsReadOnly     Property              bool IsReadOnly {get;}
-# IsSynchronized Property              bool IsSynchronized {get;}
-# Length         Property              int Length {get;}
-# LongLength     Property              long LongLength {get;}
-# Rank           Property              int Rank {get;}
-# SyncRoot       Property              System.Object SyncRoot {get;}
+Write-host "$final are safe!"
 
 
